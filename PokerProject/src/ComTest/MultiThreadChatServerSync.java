@@ -2,6 +2,7 @@ package ComTest;
 
 //Example 26 (updated)
 import Deck.Deck;
+import Deck.NotEnoughCardsException;
 import Deck.RegularDeck;
 import Game.PlayerInfo;
 import java.io.*;
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * A chat server that delivers public and private messages.
@@ -166,8 +169,12 @@ class SeverThread extends Thread {
                         }
                     }
                 } else {
-                    all(name, line);
-                    /* The message is public, broadcast it to all other clients. */
+                    try {
+                        all(name, line);
+                        /* The message is public, broadcast it to all other clients. */
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(SeverThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
             synchronized (this) {
@@ -202,7 +209,7 @@ class SeverThread extends Thread {
         }
     }
 
-    private void all(String name, String line) throws IOException {
+    private void all(String name, String line) throws IOException, NotEnoughCardsException {
         synchronized (this) {
             String cards[] = null;
             String card = null;

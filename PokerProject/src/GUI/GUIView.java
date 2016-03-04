@@ -11,7 +11,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -275,7 +274,12 @@ public class GUIView extends View {
         for (int i = 0; i < numberPanels; i++) {
             String names[] = new String[numCards];
             for (int j = 0; j < numCards; j++) {
-                String t = deck.dealCard().getName();
+                String t = "";
+                try {
+                    t = deck.dealCard().getName();
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(GUIView.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 names[j] = t;
             }
             cards[i] = new CardPanel(numCards, n * (i + 1), n * (i + 1), names, false);

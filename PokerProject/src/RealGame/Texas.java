@@ -1,12 +1,15 @@
 package RealGame;
 
 import Deck.Card;
+import Deck.NotEnoughCardsException;
 import HandRankings.TexasHand;
-import PlayerNOTUSED.Bet;
-import PlayerNOTUSED.InvalidBetException;
-import PlayerNOTUSED.Player;
+import Player.Bet;
+import Player.InvalidBetException;
+import Player.Player;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -60,7 +63,7 @@ public abstract class Texas extends Game{
         
     }
     
-    public void flop(Round round) throws InvalidBetException{
+    public void flop(Round round) throws InvalidBetException, NotEnoughCardsException{
         System.out.println("???");
         dealFlop();
         Bet b = new Bet(this.getSmallBlind()*2,0,100);
@@ -72,18 +75,26 @@ public abstract class Texas extends Game{
     private void dealPreFlop(){
         
         this.playerList.stream().filter((p) -> (p.isInHand())).forEach((p) -> {
-            p.setHand(new TexasHand());
-            p.addCard(this.deck.dealCard());
+            try {
+                p.setHand(new TexasHand());
+                p.addCard(this.deck.dealCard());
+            } catch (NotEnoughCardsException ex) {
+                Logger.getLogger(Texas.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         this.playerList.stream().filter((p) -> (p.isInHand())).forEach((p) -> {
-            p.addCard(this.deck.dealCard());
+            try {
+                p.addCard(this.deck.dealCard());
+            } catch (NotEnoughCardsException ex) {
+                Logger.getLogger(Texas.class.getName()).log(Level.SEVERE, null, ex);
+            }
             p.setCards();
         });
         
     }
     
-    private void dealFlop(){
+    private void dealFlop() throws NotEnoughCardsException{
         flop = new ArrayList<>(deck.dealCards(3));
         
         this.playerList.stream().filter((p)->(p.isInHand())).forEach((p)->{

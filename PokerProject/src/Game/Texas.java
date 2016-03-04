@@ -1,8 +1,11 @@
 package Game;
 
 import Deck.Card;
+import Deck.NotEnoughCardsException;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -84,7 +87,7 @@ public class Texas extends Game {
     }
 
     @Override
-    public void command(Bet bet) {
+    public void command(Bet bet) throws NotEnoughCardsException{
 
         switch (bet.choice) {
 
@@ -204,20 +207,31 @@ public class Texas extends Game {
 
         for (Player p : playersInHand) {
             if (p.isInHand()) {
-                Card one = deck.dealCard();
-                Card two = deck.dealCard();
-                cards[0] = one.getName();
-                cards[1] = two.getName();
-                //System.out.println(cards[0] + " " + cards[1]);
-                p.addCard(one);
-                p.addCard(two);
+                Card one;
+                try {
+                    one = deck.dealCard();
+                    cards[0] = one.getName();
+                    p.addCard(one);
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(Texas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Card two;
+                try {
+                    two = deck.dealCard();
+                    cards[1] = two.getName();
+                    p.addCard(two);
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(Texas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                          
                 p.setCards();
                 p.viewCards(p.id, cards);
+                
             }
         }
     }
 
-    public void dealFlop() {
+    public void dealFlop() throws NotEnoughCardsException {
 
         currentBet = 0;
 
@@ -239,7 +253,7 @@ public class Texas extends Game {
 
     }
 
-    private void dealTurnRiver() {
+    private void dealTurnRiver() throws NotEnoughCardsException {
 
         currentBet = 0;
 

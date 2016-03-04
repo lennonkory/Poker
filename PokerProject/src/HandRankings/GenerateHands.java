@@ -6,14 +6,16 @@ import Deck.StandardCard.Suit;
 import Deck.StandardCard.Value;
 import java.util.*;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  * @author kory
  */
 public class GenerateHands {
     
-    private static final Deck deck = new RegularDeck();
+    private static final Deck DECK = new RegularDeck();
     
-    private static final Random ran = new Random();
+    private static final Random RANDOM = new Random();
     
     private GenerateHands(){}
     
@@ -30,9 +32,9 @@ public class GenerateHands {
     }
     
     private static Card removeCardWithValue(Value value){
-        for(Card c : deck.getDeck()){
+        for(Card c : DECK.getDeck()){
             if(c.getValue() == value){
-                deck.deck.remove(c);
+                DECK.deck.remove(c);
                 return c;
             }
         }
@@ -42,9 +44,9 @@ public class GenerateHands {
     private static Card removeCardWithDifferentValue(List<Value> valueList){
         Card card = null;
         do{
-            card = deck.deck.get(ran.nextInt(deck.deck.size()));
+            card = DECK.deck.get(RANDOM.nextInt(DECK.deck.size()));
         }while(hasValue(valueList,card.getValue()));
-        deck.removeCard(card);
+        DECK.removeCard(card);
         return card;
     }
     
@@ -52,14 +54,14 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        Value start = Value.values()[ran.nextInt(13-5)];
+        Value start = Value.values()[RANDOM.nextInt(13-5)];
         
         for(int i = 0 ; i < 5; i++){
-            hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[start.ordinal()+i]));
+            hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[start.ordinal()+i]));
         }
         
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
         
         hand.sortHandHigh();
         
@@ -71,14 +73,14 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        Suit suit = Suit.values()[ran.nextInt(4)];
+        Suit suit = Suit.values()[RANDOM.nextInt(4)];
         
         for(int i = 0 ; i < 5; i++){
-            hand.addCard(new StandardCard(suit, Value.values()[ran.nextInt(13)]));
+            hand.addCard(new StandardCard(suit, Value.values()[RANDOM.nextInt(13)]));
         }
         
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
         
         hand.sortHandHigh();
         
@@ -90,15 +92,15 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        Value start = Value.values()[ran.nextInt(13-5)];
-        Suit suit = Suit.values()[ran.nextInt(4)];
+        Value start = Value.values()[RANDOM.nextInt(13-5)];
+        Suit suit = Suit.values()[RANDOM.nextInt(4)];
         
         for(int i = 0 ; i < 5; i++){
             hand.addCard(new StandardCard(suit, Value.values()[start.ordinal()+i]));
         }
         
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], Value.values()[ran.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], Value.values()[RANDOM.nextInt(13)]));
         
         hand.sortHandHigh();
         
@@ -110,8 +112,8 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        Value start = Value.values()[ran.nextInt(13)];
-        Suit suit = Suit.values()[ran.nextInt(2)];
+        Value start = Value.values()[RANDOM.nextInt(13)];
+        Suit suit = Suit.values()[RANDOM.nextInt(2)];
         
         for(int i = 0 ; i < 3; i++){
             hand.addCard(new StandardCard(Suit.values()[suit.ordinal()+i], Value.values()[start.ordinal()]));
@@ -120,11 +122,11 @@ public class GenerateHands {
         Value two;
         
         do{
-            two = Value.values()[ran.nextInt(13)];
+            two = Value.values()[RANDOM.nextInt(13)];
         }while(two == start);
         
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], two));
-        hand.addCard(new StandardCard(Suit.values()[ran.nextInt(4)], two));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], two));
+        hand.addCard(new StandardCard(Suit.values()[RANDOM.nextInt(4)], two));
         
         hand.sortHandHigh();
         
@@ -136,10 +138,15 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        deck.shuffle();
+        DECK.shuffle();
         
-        Card p = deck.dealCard();
-        hand.addCard(p);
+        Card p = null;
+        try {
+            p = DECK.dealCard();
+        } catch (NotEnoughCardsException ex) {
+            Logger.getLogger(GenerateHands.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        hand.addCard(p);//THIS LINE NEEDS TO BE FIXED WHAT IF P IS NULL?
         hand.addCard(removeCardWithValue(p.getValue()));
         
         List<Value> valueList = new ArrayList<>();
@@ -157,9 +164,14 @@ public class GenerateHands {
         
         Hand hand = new TexasHand();
         
-        deck.shuffle();
+        DECK.shuffle();
         
-        Card p = deck.dealCard();
+        Card p = null;
+        try {
+            p = DECK.dealCard();
+        } catch (NotEnoughCardsException ex) {
+            Logger.getLogger(GenerateHands.class.getName()).log(Level.SEVERE, null, ex);
+        }
         hand.addCard(p);
         hand.addCard(removeCardWithValue(p.getValue()));
         

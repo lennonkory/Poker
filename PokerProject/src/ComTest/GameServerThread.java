@@ -3,6 +3,7 @@ package ComTest;
 import Controller.PlayerListener;
 import Controller.TableListener;
 import Deck.Deck;
+import Deck.NotEnoughCardsException;
 import Deck.RegularDeck;
 import Game.*;
 import Game.PlayerInfo;
@@ -58,7 +59,11 @@ public class GameServerThread extends Thread {
             @Override
             public void dealPreflop(int start, List<Boolean> inhand) {
                 try {
-                    all("game", "pre");
+                    try {
+                        all("game", "pre");
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -79,7 +84,11 @@ public class GameServerThread extends Thread {
             @Override
             public void clearCards() {
                 try {
-                    all("game", "clear");
+                    try {
+                        all("game", "clear");
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } catch (IOException ex) {
                     Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -214,7 +223,11 @@ public class GameServerThread extends Thread {
                     notifyPlayer();
                 }
                 else{
-                    command(line);
+                    try {
+                        command(line);
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
                 /* If the message is private sent it to the given client. */
@@ -227,9 +240,17 @@ public class GameServerThread extends Thread {
                         }
                     }
                 } else if (line.equals("flop")) {
-                    game.dealFlop();
+                    try {
+                        game.dealFlop();
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
-                    all(name, line);
+                    try {
+                        all(name, line);
+                    } catch (NotEnoughCardsException ex) {
+                        Logger.getLogger(GameServerThread.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
             synchronized (this) {
@@ -264,7 +285,7 @@ public class GameServerThread extends Thread {
         }
     }
 
-    private void command(String line) {
+    private void command(String line) throws NotEnoughCardsException {
         String coms[] = line.split(" ");
 
         int b = 0;
@@ -299,7 +320,7 @@ public class GameServerThread extends Thread {
         }
     }
 
-    private void all(String name, String line) throws IOException {
+    private void all(String name, String line) throws IOException, NotEnoughCardsException {
 
         System.out.println("ALL: " + line);
 

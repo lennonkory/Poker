@@ -1,6 +1,7 @@
 package GUI;
 
 import Deck.Deck;
+import Deck.NotEnoughCardsException;
 import Deck.RegularDeck;
 import static GUI.CardDealer.HEIGHT_SIZE;
 import static GUI.CardDealer.ICON_SIZE;
@@ -16,6 +17,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 /**
@@ -79,28 +82,43 @@ public final class CardDealer extends JPanel {
         deck.shuffle();
 
         deal.addActionListener((ActionEvent e) -> {
-            String cards[] = new String[2];
-            cards[0] = deck.dealCard().getName();
-            cards[1] = deck.dealCard().getName();
-            //
-            //dealCards(3, 3, cards);
+            try {
+                String cards[] = new String[2];
+                cards[0] = deck.dealCard().getName();
+                cards[1] = deck.dealCard().getName();
+                //
+                //dealCards(3, 3, cards);
+            } catch (NotEnoughCardsException ex) {
+                Logger.getLogger(CardDealer.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         });
-
 
         JButton b = new JButton("Move");
 
         b.addActionListener((ActionEvent ev) -> {
             if (state == 0) {
-                String cards[] = new String[3];
-                cards[0] = deck.dealCard().getName();
-                cards[1] = deck.dealCard().getName();
-                cards[2] = deck.dealCard().getName();
-                dealFlop(cards);
+                try {
+                    String cards[] = new String[3];
+                    cards[0] = deck.dealCard().getName();
+                    cards[1] = deck.dealCard().getName();
+                    cards[2] = deck.dealCard().getName();
+                    dealFlop(cards);
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(CardDealer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else if (state == 1) {
-                dealTurn(deck.dealCard().getName());
+                try {
+                    dealTurn(deck.dealCard().getName());
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(CardDealer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else if (state == 2) {
-                dealRiver(deck.dealCard().getName());
+                try {
+                    dealRiver(deck.dealCard().getName());
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(CardDealer.class.getName()).log(Level.SEVERE, null, ex);
+                }
             } else {
                 clearBoard();
             }
@@ -181,15 +199,15 @@ public final class CardDealer extends JPanel {
         int size = 9;
 
         count = 0;
-  
-        if(card != null){
+
+        if (card != null) {
             lp.remove(card);
         }
-        
+
         card = new ImagePanel(600, 0, 0, 0, this.getBounds());
         lp.add(card, new Integer(60));
 
-        card.setEndLocation(540, 600);        
+        card.setEndLocation(540, 600);
 
         for (int i = 0; i < size; i++) {
 
@@ -203,7 +221,7 @@ public final class CardDealer extends JPanel {
 
             if (value) {
                 Dimension d = logoLocations.get(i);//was loc
-                cps[i] = new CardPanel(2, d.width - 30, d.height - 90, true);              
+                cps[i] = new CardPanel(2, d.width - 30, d.height - 90, true);
                 lp.add(cps[i], new Integer(50));
             } else {
                 cps[i] = null;
@@ -320,7 +338,7 @@ public final class CardDealer extends JPanel {
         } catch (NullPointerException e) {
             //System.out.println("Could not remove " + number);
         }
-        
+
         lp.repaint();
     }
 
@@ -331,19 +349,18 @@ public final class CardDealer extends JPanel {
             lp.remove(river);
         } catch (NullPointerException e) {
         }
-        
-        for(LogoIcon lg : logos){
+
+        for (LogoIcon lg : logos) {
             lg.setNotActive();
         }
-        
+
         lp.repaint();
         state = 0;
-        
-        
+
     }
-    
-    public void setAllNotActive(){
-        for(LogoIcon lg : logos){
+
+    public void setAllNotActive() {
+        for (LogoIcon lg : logos) {
             lg.setNotActive();
         }
     }
@@ -359,8 +376,8 @@ public final class CardDealer extends JPanel {
     public void setViewCompleteListener(ViewCompleteListener vcl) {
         this.vcl = vcl;
     }
-    
-    public void activePlayer(PlayerInfo info){
+
+    public void activePlayer(PlayerInfo info) {
         logos[info.getId()].setActive();
         logos[info.getId()].resetLogo(info);
     }
@@ -386,7 +403,7 @@ class LogoIcon extends JPanel {
     JLabel name;
     JLabel chips;
     JLabel pic = new JLabel();
-    
+
     boolean active = false;
 
     public LogoIcon(PlayerInfo info, int x, int y) {
@@ -397,12 +414,12 @@ class LogoIcon extends JPanel {
         this.name.setForeground(Color.red);
 
         icon = info.getIcon();
-        pic =  new JLabel(icon);
-  
+        pic = new JLabel(icon);
+
         pic.setBounds(0, 0, 60, 60);
-        
-        chips = new JLabel(""+info.getChips());
-        
+
+        chips = new JLabel("" + info.getChips());
+
         this.add(this.name);
         this.add(this.chips);
         this.add(pic);
@@ -420,23 +437,22 @@ class LogoIcon extends JPanel {
     public void resetLogo(PlayerInfo info) {
         this.name.setText(info.getName());
         icon = info.getIcon();
-        this.chips.setText(""+info.getChips());       
+        this.chips.setText("" + info.getChips());
         repaint();
     }
-    
-    public void setNotActive(){
+
+    public void setNotActive() {
         active = false;
         this.setBorder(BorderFactory.createLineBorder(Color.RED));
         repaint();
     }
-    
-    public void setActive(){
-        
-        if(!active){
-            this.setBorder(BorderFactory.createLineBorder(Color.BLUE,5));          
+
+    public void setActive() {
+
+        if (!active) {
+            this.setBorder(BorderFactory.createLineBorder(Color.BLUE, 5));
             active = true;
-        }
-        else{
+        } else {
             this.setBorder(BorderFactory.createLineBorder(Color.RED));
             active = false;
         }

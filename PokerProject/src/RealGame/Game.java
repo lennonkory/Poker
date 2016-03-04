@@ -1,11 +1,11 @@
 package RealGame;
 
-import PlayerNOTUSED.Bet;
-import PlayerNOTUSED.InvalidBetException;
-import PlayerNOTUSED.Player;
+import Player.Bet;
+import Player.InvalidBetException;
+import Player.Player;
 import Deck.Deck;
 import Deck.RegularDeck;
-import static PlayerNOTUSED.Choice.*;
+import static Player.Choice.*;
 import java.util.*;
 
 /**

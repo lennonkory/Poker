@@ -1,11 +1,14 @@
 package GUI;
 
 import Deck.Deck;
+import Deck.NotEnoughCardsException;
 import Deck.RegularDeck;
 import java.awt.*;
 import static javax.swing.GroupLayout.Alignment.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -246,7 +249,12 @@ public class GUITable {
         for (int i = 0; i < numberPanels; i++) {
             String names[] = new String[numCards];
             for (int j = 0; j < numCards; j++) {
-                String t = deck.dealCard().getName();
+                String t = "";
+                try {
+                    t = deck.dealCard().getName();
+                } catch (NotEnoughCardsException ex) {
+                    Logger.getLogger(GUITable.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 System.out.println(t);
                 names[j] = t;
             }

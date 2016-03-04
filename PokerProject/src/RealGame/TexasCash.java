@@ -1,7 +1,7 @@
 package RealGame;
 
-import PlayerNOTUSED.InvalidBetException;
-import PlayerNOTUSED.Player;
+import Player.InvalidBetException;
+import Player.Player;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;

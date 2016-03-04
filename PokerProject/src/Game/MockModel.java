@@ -6,6 +6,8 @@ import Deck.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author kory
@@ -32,7 +34,7 @@ public class MockModel {
         
     }
     
-    public void start() {
+    public void start() throws NotEnoughCardsException {
 
         Scanner input = new Scanner(System.in);
         deck.shuffle();
@@ -82,7 +84,11 @@ public class MockModel {
     public static void main(String[] args) {
 
         MockModel m = new MockModel(new GUIView(9,2));
-        m.start();
+        try {
+            m.start();
+        } catch (NotEnoughCardsException ex) {
+            Logger.getLogger(MockModel.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 

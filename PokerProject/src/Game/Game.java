@@ -6,6 +6,8 @@ import HandRankings.Hand;
 import HandRankings.RankHand;
 import static java.lang.System.out;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -66,7 +68,7 @@ public abstract class Game {
         //only called once
     }
 
-    public abstract void command(Bet bet);
+    public abstract void command(Bet bet)throws NotEnoughCardsException;
 
     public int getNextActivePlayer(int start) {
 
@@ -237,7 +239,11 @@ public abstract class Game {
             }
 
             bet.choice = command;
-            game.command(bet);
+            try {
+                game.command(bet);
+            } catch (NotEnoughCardsException ex) {
+                Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
             game.printPlayers();
             System.out.println();
 
